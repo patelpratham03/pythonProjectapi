@@ -26,4 +26,7 @@ urlpatterns = [
     path("singledata/<int:id>",views.singledata),
     path("toggle-favorite/<int:id>", views.toggle_favorite, name="toggle_favorite"),
     path("favorites", views.favorites_list, name="favorites_list"),
+    path("login/", views.login_user, name="login"),
+    path("register/", views.register_user, name="register"),
+    path("logout/", views.logout_user, name="logout"),
 ]
