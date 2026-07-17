@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ data.name }} | Chef's Palette</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --bg-dark: #0B0F19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(31, 41, 55, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #F59E0B; /* Amber/Orange accent */
+            --primary-hover: #D97706;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFF !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand span {
+            color: var(--primary);
+        }
+
+        .nav-link-btn {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+            border: 1.5px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #FFF !important;
+        }
+
+        /* Recipe Layout */
+        .recipe-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recipe-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: #FFF;
+        }
+
+        .time-badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .bg-time {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+        }
+
+        .bg-cal {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
+
+        .bg-srv {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .recipe-meta-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .recipe-meta-box h5 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .recipe-meta-box p {
+            font-size: 1.1rem;
+            color: #FFF;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            margin-right: 0.4rem;
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .recipe-hero-img {
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        /* Detail Cards */
+        .details-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .details-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #FFF;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .details-card h3 i {
+            color: var(--primary);
+        }
+
+        /* Ingredients */
+        .ingredient-list {
+            list-style-type: none;
+            padding-left: 0;
+            column-count: 2;
+            column-gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .ingredient-list {
+                column-count: 1;
+            }
+        }
+
+        .ingredient-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-main);
+            break-inside: avoid;
+        }
+
+        .ingredient-list li i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        /* Instructions */
+        .instruction-step {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .instruction-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: var(--bg-dark);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        /* Detail bookmark toggle button */
+        .detail-fav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid var(--border-color);
+            color: #FFF;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .detail-fav-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #EF4444;
+            color: #EF4444;
+        }
+
+        .detail-fav-btn.active {
+            background: #EF4444;
+            border-color: #EF4444;
+            color: #FFF;
+        }
+
+        .detail-fav-btn.active:hover {
+            background: #DC2626;
+            border-color: #DC2626;
+            color: #FFF;
+        }
+
+        footer {
+            background: rgba(17, 24, 39, 0.6);
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-pizza-slice me-2 text-warning"></i>Chef's<span>Palette</span>
+            </a>
+            
+            <a href="/" class="nav-link-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        {% if data %}
+        <div class="row">
+            <div class="col-lg-9 mx-auto">
+                
+                <!-- Recipe Header -->
+                <div class="recipe-header">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-3">
+                        <h1 class="recipe-title mb-0">{{ data.name }}</h1>
+                        
+                        <!-- Toggle Bookmarks Button -->
+                        <button class="detail-fav-btn {% if is_favorite %}active{% endif %}" id="bookmark-toggle" data-recipe-id="{{ data.id }}" data-recipe-name="{{ data.name }}" data-recipe-image="{{ data.image }}">
+                            <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span id="bookmark-text">{% if is_favorite %}Bookmarked{% else %}Bookmark Recipe{% endif %}</span>
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="text-warning me-2"><i class="fas fa-star"></i> {{ data.rating }}</span>
+                        <span class="text-muted">({{ data.reviewCount }} reviews)</span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="time-badge bg-time">
+                            <i class="fas fa-clock"></i> Prep: {{ data.prepTimeMinutes }} mins | Cook: {{ data.cookTimeMinutes }} mins
+                        </span>
+                        <span class="time-badge bg-cal">
+                            <i class="fas fa-fire"></i> {{ data.caloriesPerServing }} kcal / serving
+                        </span>
+                        <span class="time-badge bg-srv">
+                            <i class="fas fa-users"></i> {{ data.servings }} servings
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Recipe Image -->
+                <div class="text-center">
+                    <img src="{{ data.image }}" class="recipe-hero-img img-fluid w-100" alt="{{ data.name }}">
+                </div>
+
+                <!-- Recipe Meta Data -->
+                <div class="recipe-meta-box">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <h5>Cuisine</h5>
+                            <p>{{ data.cuisine }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Difficulty</h5>
+                            <p>{{ data.difficulty }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Tags</h5>
+                            <div class="d-flex flex-wrap">
+                                {% for tag in data.tags %}
+                                <span class="tag-pill">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Columns -->
+                <div class="row">
+                    <!-- Ingredients -->
+                    <div class="col-12">
+                        <div class="details-card">
+                            <h3><i class="fas fa-apple-whole"></i> Ingredients</h3>
+                            <ul class="ingredient-list">
+                                {% for ingredient in data.ingredients %}
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>{{ ingredient }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="col-12">
+                        <div class="details-card">
+                            <h3><i class="fas fa-kitchen-set"></i> Preparation Steps</h3>
+                            <div class="instructions-timeline">
+                                {% for instruction in data.instructions %}
+                                <div class="instruction-step">
+                                    <div class="step-number">{{ forloop.counter }}</div>
+                                    <div class="step-text">{{ instruction }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <h3 class="text-danger">Recipe Not Found</h3>
+            <p>We couldn't retrieve the details for this recipe. It may have been deleted or the API is offline.</p>
+            <a href="/" class="btn btn-warning rounded-pill px-4 mt-3">Back to Home</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center text-muted">
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            const bookmarkToggle = document.getElementById('bookmark-toggle');
+            
+            if (bookmarkToggle) {
+                bookmarkToggle.addEventListener('click', () => {
+                    const recipeId = bookmarkToggle.dataset.recipeId;
+                    const recipeName = bookmarkToggle.dataset.recipeName;
+                    const recipeImage = bookmarkToggle.dataset.recipeImage;
+                    
+                    const formData = new FormData();
+                    formData.append('name', recipeName);
+                    formData.append('image', recipeImage);
+                    
+                    fetch(`/toggle-favorite/${recipeId}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const icon = bookmarkToggle.querySelector('i');
+                        const textSpan = document.getElementById('bookmark-text');
+                        
+                        if (data.status === 'added') {
+                            bookmarkToggle.classList.add('active');
+                            icon.className = 'fas fa-heart';
+                            textSpan.textContent = 'Bookmarked';
+                        } else if (data.status === 'removed') {
+                            bookmarkToggle.classList.remove('active');
+                            icon.className = 'far fa-heart';
+                            textSpan.textContent = 'Bookmark Recipe';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Bookmark toggle error:', err);
+                        alert('Could not update bookmark. Please try again.');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

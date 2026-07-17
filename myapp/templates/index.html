@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chef's Palette | Discover Recipes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --bg-dark: #0B0F19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(31, 41, 55, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #F59E0B; /* Amber/Orange accent */
+            --primary-hover: #D97706;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFF !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand span {
+            color: var(--primary);
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #FFF;
+            border-radius: 50px 0 0 50px;
+            padding-left: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: none;
+            color: #FFF;
+        }
+
+        .search-btn {
+            border-radius: 0 50px 50px 0;
+            background: var(--primary);
+            border: none;
+            color: var(--bg-dark);
+            padding: 0 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .nav-link-btn {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+            border: 1.5px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link-btn:hover, .nav-link-btn.active {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--primary);
+            color: var(--primary) !important;
+        }
+
+        /* Sidebar Styling */
+        .category-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-list h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #FFF;
+        }
+
+        .category-list h5 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .filter-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .filter-link:hover, .filter-link.active {
+            color: #FFF;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-link.active i {
+            color: var(--primary);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .tags-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .tags-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.35rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tag-pill:hover, .tag-pill.active {
+            background: var(--primary);
+            color: var(--bg-dark) !important;
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Recipe Grid Styling */
+        .recipe-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .recipe-img-container {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .recipe-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .recipe-card:hover .recipe-img {
+            transform: scale(1.04);
+        }
+
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(11, 15, 25, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            color: #FFF;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background: rgba(11, 15, 25, 0.85);
+            border-color: #EF4444;
+        }
+
+        .favorite-btn i.text-danger {
+            color: #EF4444 !important;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: #FFF;
+            line-height: 1.4;
+        }
+
+        .recipe-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .time-badge {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.7rem;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            background: transparent;
+            border-top: none;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #FFF;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .view-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .results-header {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clear-filter-btn {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .clear-filter-btn:hover {
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(17, 24, 39, 0.6);
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-pizza-slice me-2 text-warning"></i>Chef's<span>Palette</span>
+            </a>
+            
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form class="d-flex mx-auto col-lg-6 my-3 my-lg-0" method="post" action="/search">
+                    {% csrf_token %}
+                    <input type="text" name="query" class="form-control search-input" placeholder="Search recipes (e.g. Pasta, Pizza)..." value="{{ search_query|default:'' }}" required>
+                    <button class="btn search-btn" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <div class="ms-auto d-flex align-items-center">
+                    <a href="/favorites" class="nav-link-btn {% if is_favorites_page %}active{% endif %}">
+                        <i class="fas fa-heart"></i> My Bookmarks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Sidebar Filter Panel -->
+            <div class="col-lg-3 mb-4">
+                <div class="category-list">
+                    <h4><i class="fas fa-sliders-h me-2 text-warning"></i>Filters</h4>
+                    
+                    <h5>Meal Type</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="filter-link {% if active_meal == 'breakfast' %}active{% endif %}" href="/mealtype/breakfast">
+                                <i class="fas fa-egg"></i> Breakfast
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="filter-link {% if active_meal == 'lunch' %}active{% endif %}" href="/mealtype/lunch">
+                                <i class="fas fa-utensils"></i> Lunch
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="filter-link {% if active_meal == 'dinner' %}active{% endif %}" href="/mealtype/dinner">
+                                <i class="fas fa-moon"></i> Dinner
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="filter-link {% if active_meal == 'snack' %}active{% endif %}" href="/mealtype/snack">
+                                <i class="fas fa-cookie"></i> Snack
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <h5 class="mt-4">Popular Tags</h5>
+                    <div class="tags-container">
+                        {% for i in tag %}
+                        <a href="/databytags/{{ i }}" class="tag-pill {% if active_tag == i %}active{% endif %}">{{ i }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recipes Grid Panel -->
+            <div class="col-lg-9">
+                <div class="results-header">
+                    <h2>
+                        {% if is_favorites_page %}
+                            My Bookmarked Recipes
+                        {% elif active_tag %}
+                            Tag: <span class="text-warning">{{ active_tag|title }}</span>
+                        {% elif active_meal %}
+                            Meal: <span class="text-warning">{{ active_meal|title }}</span>
+                        {% elif search_query %}
+                            Search Results for: <span class="text-warning">"{{ search_query }}"</span>
+                        {% else %}
+                            Explore Recipes
+                        {% endif %}
+                    </h2>
+                    
+                    {% if active_tag or active_meal or search_query or is_favorites_page %}
+                    <a href="/" class="clear-filter-btn"><i class="fas fa-times-circle"></i> Clear Filters</a>
+                    {% endif %}
+                </div>
+                
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for i in data %}
+                    <div class="col">
+                        <div class="recipe-card">
+                            <!-- Favorite Toggle Button -->
+                            <button class="favorite-btn" data-recipe-id="{{ i.id }}" data-recipe-name="{{ i.name }}" data-recipe-image="{{ i.image }}" title="Add to Bookmarks">
+                                <i class="{% if i.id in favorite_ids %}fas text-danger{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                            
+                            <div class="recipe-img-container">
+                                <img src="{{ i.image }}" class="recipe-img" alt="{{ i.name }}" loading="lazy">
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">{{ i.name }}</h5>
+                                <div class="recipe-meta-row">
+                                    <span class="time-badge">
+                                        <i class="fas fa-clock me-1"></i> {{ i.cookTimeMinutes }} {% if i.cookTimeMinutes != 'Saved' %}mins{% endif %}
+                                    </span>
+                                    <span class="meal-label text-truncate" style="max-width: 110px;">
+                                        {% for m in i.mealType %}
+                                            {{ m }}{% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            General
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/singledata/{{ i.id }}" class="view-btn">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>No Recipes Found</h3>
+                            <p class="mb-0">Try checking your spelling, clear active filters, or save some favorites to display them here.</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center text-muted">
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const recipeId = btn.dataset.recipeId;
+                    const recipeName = btn.dataset.recipeName;
+                    const recipeImage = btn.dataset.recipeImage;
+                    
+                    const formData = new FormData();
+                    formData.append('name', recipeName);
+                    formData.append('image', recipeImage);
+                    
+                    // Call the AJAX endpoint
+                    fetch(`/toggle-favorite/${recipeId}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const icon = btn.querySelector('i');
+                        if (data.status === 'added') {
+                            icon.classList.replace('far', 'fas');
+                            icon.classList.add('text-danger');
+                        } else if (data.status === 'removed') {
+                            icon.classList.replace('fas', 'far');
+                            icon.classList.remove('text-danger');
+                            
+                            // If we are on the bookmarks list page, remove card from UI
+                            if (window.location.pathname.includes('favorites')) {
+                                const cardCol = btn.closest('.col');
+                                cardCol.style.opacity = '0';
+                                cardCol.style.transform = 'scale(0.9)';
+                                cardCol.style.transition = 'all 0.3s ease';
+                                setTimeout(() => {
+                                    cardCol.remove();
+                                    if (document.querySelectorAll('.recipe-card').length === 0) {
+                                        location.reload(); // reload to show empty state
+                                    }
+                                }, 300);
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Bookmark toggle error:', err);
+                        alert('Could not update bookmarks. Please try again.');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

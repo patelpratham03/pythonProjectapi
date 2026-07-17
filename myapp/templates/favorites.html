@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookmarks | Chef's Palette</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --bg-dark: #0B0F19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(31, 41, 55, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #F59E0B; /* Amber/Orange accent */
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0;
+        }
+
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFF !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand span {
+            color: var(--primary);
+        }
+
+        .nav-link-btn {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+            border: 1.5px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link-btn:hover, .nav-link-btn.active {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--primary);
+            color: var(--primary) !important;
+        }
+
+        /* Recipe Grid Styling */
+        .recipe-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .recipe-img-container {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .recipe-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .recipe-card:hover .recipe-img {
+            transform: scale(1.04);
+        }
+
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(11, 15, 25, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            color: #FFF;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background: rgba(11, 15, 25, 0.85);
+            border-color: #EF4444;
+        }
+
+        .favorite-btn i.text-danger {
+            color: #EF4444 !important;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: #FFF;
+            line-height: 1.4;
+        }
+
+        .recipe-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .time-badge {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary);
+            padding: 0.3rem 0.7rem;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .card-footer {
+            background: transparent;
+            border-top: none;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #FFF;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .view-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .results-header {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clear-filter-btn {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .clear-filter-btn:hover {
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-muted);
+            width: 100%;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(17, 24, 39, 0.6);
+            border-top: 1px solid var(--border-color);
+            padding: 2.5rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-pizza-slice me-2 text-warning"></i>Chef's<span>Palette</span>
+            </a>
+            
+            <a href="/" class="nav-link-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="results-header">
+                    <h2><i class="fas fa-heart text-danger me-2"></i>My Bookmarked Recipes</h2>
+                    <a href="/" class="clear-filter-btn"><i class="fas fa-home"></i> Back to Explore</a>
+                </div>
+                
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    {% for i in data %}
+                    <div class="col">
+                        <div class="recipe-card">
+                            <!-- Favorite Toggle Button -->
+                            <button class="favorite-btn" data-recipe-id="{{ i.id }}" data-recipe-name="{{ i.name }}" data-recipe-image="{{ i.image }}" title="Remove Bookmark">
+                                <i class="fas text-danger fa-heart"></i>
+                            </button>
+                            
+                            <div class="recipe-img-container">
+                                <img src="{{ i.image }}" class="recipe-img" alt="{{ i.name }}" loading="lazy">
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">{{ i.name }}</h5>
+                                <div class="recipe-meta-row">
+                                    <span class="time-badge">
+                                        <i class="fas fa-bookmark me-1"></i> Bookmarked
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/singledata/{{ i.id }}" class="view-btn">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="far fa-heart"></i>
+                        <h3>Your Bookmark List is Empty</h3>
+                        <p class="mb-4">Explore delicious dishes and click the heart icon to save recipes locally.</p>
+                        <a href="/" class="btn btn-warning rounded-pill px-4 py-2 text-dark fw-bold">Explore Recipes</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center text-muted">
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const recipeId = btn.dataset.recipeId;
+                    
+                    // Call the AJAX endpoint to remove
+                    fetch(`/toggle-favorite/${recipeId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'removed') {
+                            const cardCol = btn.closest('.col');
+                            cardCol.style.opacity = '0';
+                            cardCol.style.transform = 'scale(0.9)';
+                            cardCol.style.transition = 'all 0.3s ease';
+                            setTimeout(() => {
+                                cardCol.remove();
+                                // check if no cards left
+                                if (document.querySelectorAll('.recipe-card').length === 0) {
+                                    location.reload(); // reload to show empty state
+                                }
+                            }, 300);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Bookmark toggle error:', err);
+                        alert('Could not update bookmarks. Please try again.');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
